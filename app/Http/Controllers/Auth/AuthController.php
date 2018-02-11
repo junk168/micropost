@@ -30,6 +30,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
+        protected $redirectTo = '/';
         $this->middleware('guest', ['except' => 'getLogout']);
     }
 
