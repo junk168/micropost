@@ -14,9 +14,25 @@
             </div>
             <div>
                 @if (Auth::user()->id == $micropost->user_id)
-                    {!! Form::open(['route' => ['microposts.destroy', $micropost->id], 'method' => 'delete']) !!}
-                        {!! Form::submit('Delete', ['class' => 'btn btn-danger btn-xs']) !!}
-                    {!! Form::close() !!}
+                    @if ($user->is_favorite($micropost->id))
+                        <div class="form-group">
+                            {!! Form::open(['route' => ['user.un_favorite', $micropost->id], 'method' => 'delete']) !!}
+                                {!! Form::submit('unFavorite', ['class' => 'btn btn-success btn-xs']) !!}
+                            {!! Form::close() !!}
+                        </div>
+                    @else
+                        <div class="form-group">
+                            {!! Form::open(['route' => ['user.add_favorite', $micropost->id], 'method' => 'get']) !!}
+                                {!! Form::submit('Favorite', ['class' => 'btn btn-default btn-xs']) !!}
+                            {!! Form::close() !!}
+                        </div>
+                    @endif
+
+                    <div class="form-group">
+                        {!! Form::open(['route' => ['microposts.destroy', $micropost->id], 'method' => 'delete']) !!}
+                            {!! Form::submit('Delete', ['class' => 'btn btn-danger btn-xs']) !!}
+                        {!! Form::close() !!}
+                    </div>
                 @endif
             </div>
         </div>

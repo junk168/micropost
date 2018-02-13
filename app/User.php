@@ -42,6 +42,9 @@ class User extends Model implements AuthenticatableContract,
         return $this->hasMany(Micropost::class);
     }
 
+    /**
+     * フォロー機能
+     */
     public function followings()
     {
         return $this->belongsToMany(User::class, 'user_follow', 'user_id', 'follow_id')->withTimestamps();
@@ -54,9 +57,9 @@ class User extends Model implements AuthenticatableContract,
 
     public function follow($userId)
     {
-        // 既にフォローしているかの確認 
+        // 既にフォローしているかの確認
         $exist = $this->is_following($userId);
-        // 自分自身ではないかの確認 
+        // 自分自身ではないかの確認
         $its_me = $this->id == $userId;
 
         if ($exist || $its_me) {
@@ -65,18 +68,18 @@ class User extends Model implements AuthenticatableContract,
         } else {
             // 未フォローであればフォローする
             $this->followings()->attach($userId);
-    
+
             return true;
         }
     }
-    
+
     public function unfollow($userId)
     {
         // 既にフォローしているかの確認
         $exist = $this->is_following($userId);
         // 自分自身ではないかの確認
         $its_me = $this->id == $userId;
-    
+
         if ($exist && !$its_me) {
             // 既にフォローしていればフォローを外す
             $this->followings()->detach($userId);
@@ -86,7 +89,7 @@ class User extends Model implements AuthenticatableContract,
             return false;
         }
     }
-    
+
     public function is_following($userId) {
         return $this->followings()->where('follow_id', $userId)->exists();
     }
@@ -97,4 +100,60 @@ class User extends Model implements AuthenticatableContract,
         $follow_user_ids[] = $this->id;
         return Micropost::whereIn('user_id', $follow_user_ids);
     }
+
+    /**
+     * お気に入り機能
+     */
+    public function favorite_posts()
+    {
+        return $this->belongsToMany(User::class, 'user_favorite', 'user_id', 'favorite_id')->withTimestamps();
+    }
+
+    public function favorite_users()
+    {
+        return $this->belongsToMany(User::class, 'user_favorite', 'favorite_id', 'user_id')->withTimestamps();
+    }
+
+    public function add_favorite($micropostId)
+    {
+        // お気に入り済みか確認
+        $exist = $this->is_favorite($micropostId);
+
+        if ($exist) {
+            // お気に入り済みなら何もしない
+            return false;
+        } else {
+            // お気に入り済みでなければお気に入りする
+            $this->favorite_posts()->attach($micropostId);
+
+            return true;
+        }
+    }
+
+    public function un_favorite($micropostId)
+    {
+        // 既にお気に入りしているか確認
+        $exist = $this->is_favorite($micropostId);
+
+        if ($exist) {
+            // お気に入り済みならお気に入りを外す
+            $this->favorite_posts()->detach($micropostId);
+            return true;
+        } else {
+            // お気に入り済みでなければ何もしない
+            return false;
+        }
+    }
+
+    public function is_favorite($micropostId) {
+        return $this->favorite_posts()->where('favorite_id', $micropostId)->exists();
+    }
+
+    public function feed_favorites()
+    {
+        $favorite_user_ids = $this->favorite_posts()->lists('users.id')->toArray();
+        $favorite_user_ids[] = $this->id;
+        return Micropost::whereIn('user_id', $favorite_user_ids);
+    }
+
 }

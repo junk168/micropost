@@ -14,7 +14,7 @@ class UsersController extends Controller
     public function index()
     {
         $users = User::paginate(5);
-        
+
         return view('users.index', [
             'users' => $users,
         ]);
@@ -30,7 +30,7 @@ class UsersController extends Controller
             'microposts' => $microposts,
         ];
         $data += $this->counts($user);
-        
+
         return view('users.show', $data);
     }
 
@@ -57,7 +57,34 @@ class UsersController extends Controller
             'users' => $followers,
         ];
         $data += $this->counts($user);
-        
+
         return view('users.followers', $data);
+    }
+
+    public function favorite_posts($id)
+    {
+        $user = User::find($id);
+        $favorite_posts = $user->favorite_posts()->paginate(10);
+
+        $data = [
+            'user' => $user,
+            'users' => $favorite_posts,
+        ];
+        $data += $this->counts($user);
+        return view('users.favorite_posts', $data);
+    }
+
+    public function favorite_users($id)
+    {
+        $user = User::find($id);
+        $favorite_users = $user->favorite_users()->paginate(10);
+
+        $data = [
+            'user' => $user,
+            'users' => $favorite_users,
+        ];
+        $data += $this->counts($user);
+
+        return view('users.favorite_users', $data);
     }
 }
