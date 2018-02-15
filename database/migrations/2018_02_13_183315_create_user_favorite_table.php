@@ -20,7 +20,7 @@ class CreateUserFavoriteTable extends Migration
 
             // 外部キー設定
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('favorite_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('favorite_id')->references('id')->on('microposts')->onDelete('cascade');
         });
     }
 
