@@ -13,22 +13,24 @@
                 <p>{!! nl2br(e($micropost->content)) !!}</p>
             </div>
             <div>
-                @if (Auth::user()->id == $micropost->user_id)
-                    <div class="form-group">
+                @if (Auth::user())
+                    @if (Auth::user()->id != $micropost->user_id)
                         @if (Auth::user()->is_favorite($micropost->id))
-                                {!! Form::open(['route' => ['user.un_favorite', $micropost->id], 'method' => 'delete']) !!}
-                                    {!! Form::submit('unFavorite', ['class' => 'btn btn-success btn-xs']) !!}
-                                {!! Form::close() !!}
+                            {!! Form::open(['route' => ['user.un_favorite', $micropost->id], 'method' => 'delete']) !!}
+                                {!! Form::submit('unFavorite', ['class' => 'btn btn-success btn-xs']) !!}
+                            {!! Form::close() !!}
                         @else
-                                {!! Form::open(['route' => ['user.add_favorite', $micropost->id], 'method' => 'get']) !!}
-                                    {!! Form::submit('Favorite', ['class' => 'btn btn-default btn-xs']) !!}
-                                {!! Form::close() !!}
+                            {!! Form::open(['route' => ['user.add_favorite', $micropost->id], 'method' => 'get']) !!}
+                                {!! Form::submit('Favorite', ['class' => 'btn btn-default btn-xs']) !!}
+                            {!! Form::close() !!}
                         @endif
+                    @endif
 
+                    @if (Auth::user()->id == $micropost->user_id)
                         {!! Form::open(['route' => ['microposts.destroy', $micropost->id], 'method' => 'delete']) !!}
                             {!! Form::submit('Delete', ['class' => 'btn btn-danger btn-xs']) !!}
                         {!! Form::close() !!}
-                    </div>
+                    @endif
                 @endif
             </div>
         </div>

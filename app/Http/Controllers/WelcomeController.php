@@ -20,10 +20,12 @@ class WelcomeController extends Controller
         if (\Auth::check()) {
             $user = \Auth::user();
             $microposts = $user->feed_microposts()->orderBy('created_at', 'desc')->paginate(10);
+            $favorite_posts = $user->feed_favorites()->orderBy('created_at', 'desc')->paginate(10);
 
             $data = [
                 'user' => $user,
                 'microposts' => $microposts,
+                'favorite_posts' => $favorite_posts,
             ];
         }
         return view('welcome', $data);

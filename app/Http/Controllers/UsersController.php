@@ -14,9 +14,11 @@ class UsersController extends Controller
     public function index()
     {
         $users = User::paginate(5);
+        $favorite_posts = User::paginate(5);
 
         return view('users.index', [
             'users' => $users,
+            'favorite' => $favorite_posts,
         ]);
     }
 
@@ -68,9 +70,11 @@ class UsersController extends Controller
 
         $data = [
             'user' => $user,
-            'users' => $favorite_posts,
+            'favorite_posts' => $favorite_posts,
+            // 'microposts' => $favorite_posts,
         ];
         $data += $this->counts($user);
+
         return view('users.favorite_posts', $data);
     }
 
@@ -81,7 +85,7 @@ class UsersController extends Controller
 
         $data = [
             'user' => $user,
-            'users' => $favorite_users,
+            'favorite_users' => $favorite_users,
         ];
         $data += $this->counts($user);
 
